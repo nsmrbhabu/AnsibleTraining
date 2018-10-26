@@ -1,0 +1,48 @@
+- name: install and config inginx
+  hosts: all
+  vars: 
+     - greeting_msg: DevOps
+     - provisioner_tool: Docker
+     - automation_tool: Ansible
+
+  tasks: 
+     - name: install inginx in ubuntu
+       apt: name=nginx state=latest update_cache=no
+       when: ( ansible_distribution == "Ubuntu" and ansible_os_family == "Debian" )
+
+     - name: install epel-release package on CentOS
+       yum: name=epel-release state=latest
+       when: ( ansible_distribution == "CentOS" and ansible_os_family == "RedHat" )
+
+     - name: install nginx on CentOS 
+       yum: name=nginx state=latest
+       when: ( ansible_distribution == "CentOS" and ansible_os_family == "RedHat" )
+
+     - name: config nginx web root folder in Ubuntu 
+       copy: src=default dest=/etc/nginx/sites-available/default
+       when: ( ansible_distribution == "Ubuntu" and ansible_os_family == "Debian" ) 
+
+     - name: config nginx web root folder in Centos
+       copy: src=default.conf dest=/etc/nginx/conf.d/default.conf
+       when: ( ansible_distribution == "CentOS" and ansible_os_family == "RedHat" )
+
+     - name: create Web root folder
+       file: path=/var/html/ mode=0777 state=directory
+
+     - name: deploy web page in nginx
+       template: src=index.html.j2 dest=/var/html/index.html
+
+     - name: restart nginx
+       command: service nginx restart
+
+#Yet to finish the script declare a list var
+- name: Test the deployed web page
+  hosts: localhost
+  tasks:
+    - name: Check our webpage
+      shell: curl {{item}}
+      with_sequence: start=1 end=2
+      register: output
+
+    - debug: var=output  
+  

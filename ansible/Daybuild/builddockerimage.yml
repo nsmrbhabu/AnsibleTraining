@@ -1,0 +1,8 @@
+- name: demo building docker images through playbook
+  hosts: localhost
+  tasks:
+          - name: Build ubuntun Image
+            docker_image:
+              name: "tektutor/ubuntu-ansible"
+              state: present
+

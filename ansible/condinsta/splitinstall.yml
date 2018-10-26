@@ -1,0 +1,34 @@
+- name: install and config inginx
+  hosts: all 
+  tasks: 
+     - name: install inginx in ubuntu
+       apt: name=nginx state=latest update_cache=yes
+       when: ( ansible_distribution == "Ubuntu" and ansible_os_family == "Debian")
+
+     - name: install epel-release package on CentOS
+       yum: name=epel-release state=latest
+       when: ( ansible_distribution == "CentOS" and anisble_os_family == "RedHat")
+
+     - name: install nginx on CentOS
+       yum: name=nginx state=latest
+       when: ( ansible_distribution == "CentOS" and anisble_os_family == "RedHat")
+
+- name: install nginx on ubuntu 
+  hosts: ubuntu
+  tasks:
+     - name: install inginx in ubuntu
+       apt: name=nginx state=latest update_cache=yes
+     
+     - name: config nginx web root folder in Ubuntu
+       copy: src=default dest=/etc/nginx/sites-available/default
+
+     - name: Create Web root folder
+       file: path=/var/html mode:0777 state=directory
+
+     - name: Deploy web page in nginx
+       template: src= index.html.js dest=/var/html/index.html
+
+     - name: restart nginx
+       command: service nginx restart
+
+

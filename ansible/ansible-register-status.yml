@@ -1,0 +1,14 @@
+- name: Demo on registre status
+  hosts: localhost
+  tasks:
+          - command: /bin/true
+            register: result
+            ignore_errors: True
+
+          - debug: var=result
+
+          - debug: msg="previous task failed"
+            when: result.rc != 0
+
+          - debug: msg="previous was successful"
+            when: result.rc == 0

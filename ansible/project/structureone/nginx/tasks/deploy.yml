@@ -1,0 +1,6 @@
+---
+- name: Create nginx web root folder
+  file: path=/var/html mode=0777 state=directory
+
+- name: Deploy a sample web page 
+  template: src=index.html.j2 dest=/var/html
